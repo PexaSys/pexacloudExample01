@@ -1,0 +1,23 @@
+Package: pexacloudExample01
+Type: Package
+Title: Example R Package, prepared for PexaCloud Service
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Mehrshad", "Mokhtaran",
+      email = "maehrshad.mokhtaran@gmail.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: This package is an example for ready for PexaCloud R pakage..
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 3.6.0),
+    httr
+Imports:
+    jsonlite,
+    httr,
+    ggplot2
+RoxygenNote: 7.3.1
