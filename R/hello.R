@@ -55,7 +55,7 @@ hello<-function()
 }
 # If ignoreDefaultInput is not true, the function will works if:
 #' @export
-hello2<-function(execution_id, callback_url)
+hello2<-function(...)
 {
   return('Hello ${execution_id}!')
 }
