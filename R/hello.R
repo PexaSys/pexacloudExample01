@@ -123,6 +123,7 @@ gateway<-function(...){
 }
 
 # example of choose a function and call it dynamically
+#' @export
 call_function<-function(...){
 
   arguments <- list(...)
@@ -137,6 +138,7 @@ call_function<-function(...){
 }
 
 # Example of a function that used callback method to works long like a an asynchronous function
+#' @export
 model_run<-function(execution_id, callback_url, iteration, wait){
 
   # Start the while loop
@@ -158,6 +160,7 @@ model_run<-function(execution_id, callback_url, iteration, wait){
 }
 
 # Example of a function that creates extra data
+#' @export
 create_extra_data<-function(){
 
   # Call another function that creates extra data
