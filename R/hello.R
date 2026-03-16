@@ -113,9 +113,6 @@ gateway<-function(...){
   # For example contact these params.
   out<- list(result="success", param1=param1, param2=param2, param3=param3)
 
-  # An example of calling a function that requested form gateway to run it
-  out<-do.call(func_name, args = list(param1, param2, param3))
-
   # Preparing to send the result back to PexaCloud
   require(jsonlite)
 
