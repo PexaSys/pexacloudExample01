@@ -39,6 +39,11 @@
 # progress_step and progress_total are used to report the progress of the execution.
 # func_output is used to send the results back to PexaCloud and it assume that the function is finished and the results are ready to be returned.
 
+# Best practices:
+# Use '...' to capture the arguments of the function. It is highly recommended to use it, even if the function has no arguments.
+# Always take care of the the package version, it is required to be sure what version is really running.
+# Have a fucntion that gives the information about the package, it can be like a metadata function/; get_my_info()
+
 # ------------------------------------------------------------------------------------------------
 
 #  These are the packages that are needed to be imported from preparing the package for PexaCloud Service
@@ -47,28 +52,14 @@
 #' @importFrom ggplot2 ggplot
 #'
 
-# Thiis s a simple function that returns 'Hello!', No input, ignoreDefauktInput must be true
+# Thiis s a simple function that returns 'Hello!', without ..., ignoreDefauktInput must be true
 #' @export
-hello<-function()
+hello<-function(...)
 {
   return('Hello!')
 }
-# If ignoreDefaultInput is not true, the function will works if:
-#' @export
-hello2<-function(...)
-{
-  return('Hello ${execution_id}!')
-}
 
-# This is a simple function that returns the name of the package, No input, ignoreDefauktInput must be true
-#' @export
-get_my_name<-function(...)
-{
-  x<-getPackageName()
-  return(x)
-}
-
-# This is a simple function that returns the information about the package, No input, ignoreDefauktInput must be true
+# This is a simple function that returns the information about the package.
 #' @export
 get_my_info<-function(...)
 {
@@ -104,7 +95,7 @@ callback<- function(json_body, callback_url){
 
 }
 
-# This is the gateway function that is used to be called by PexaCloud to invoke the service function
+# This is the gateway function that is used to be called by PexaCloud.
 # It is default function that is called by PexaCloud if no function is specified in the request
 #' @export
 gateway<-function(...){
@@ -114,10 +105,13 @@ gateway<-function(...){
 
   # first level of the json 
   # this is an example that user wanted the getway function to call a different function: func_name="model_run"
-  func_name<-arguments$func_name
   param1<-arguments$param1
   param2<-arguments$param2
   param3<-arguments$param3
+
+  # Do the work
+  # For example contact these params.
+  out<- list(result="success", param1=param1, param2=param2, param3=param3)
 
   # An example of calling a function that requested form gateway to run it
   out<-do.call(func_name, args = list(param1, param2, param3))
@@ -128,36 +122,52 @@ gateway<-function(...){
   return(toJSON(out))
 }
 
-# Example of a function that is called by the gateway function
-# It is a simple function that demonstrates the use of the callback function
-model_run<-function(param1, param2, param3){
+# example of choose a function and call it dynamically
+call_function<-function(...){
+
+  arguments <- list(...)
+
+  out<-do.call(arguments$func_name, args = list( execution_id = arguments$execution_id, callback_url = arguments$callback_url, interation = arguments$interation, wait = arguments$wait))
+
+  # Preparing to send the result back to PexaCloud
+  require(jsonlite)
+
+  # Return the results, this is the result for the main call to the service
+  return(toJSON(out))
+}
+
+# Example of a function that used callback method to works long like a an asynchronous function
+model_run<-function(execution_id, callback_url, iteration, wait){
 
   # Start the while loop
-  for (i in 1:param1) {
+  for (i in 1:iteration) {
 
     # Report progress
-    ret <- callback(list(execution_id = execution_id, progress_step = counter, progress_total=iteration), callback_url)
+    ret <- callback(list(execution_id = execution_id, progress_step = i, progress_total=iteration), callback_url)
 
     # Print the current value of the counter
-    print(counter)
+    print(i)
 
-    # Increment the counter
-    counter <- counter + 1
   }
-
-  # Call another function that is called by the model_run function
-  generate_plot()
 
   # Send the results back to PexaCloud
   ret <- callback(list(execution_id = execution_id, func_output=list(key1=1,key2=2)), callback_url)
 
-  # Return the results to the gateway function, this is the result for the main call to the service
+  # Return the results, this is the result for the main call to the service
   return(list(result="success", execution_id=execution_id, func_output=list(key1=1,key2=2)))
 }
 
-# Example of a function that is called by the model_run function
+# Example of a function that creates extra data
+create_extra_data<-function(){
+
+  # Call another function that creates extra data
+  generate_plot()
+  return(list(result="success", message="Extra data created"))
+}
+
+# Example of a function that is called by the other functions
 # It is a simple function that demonstrates the use of the ggplot2 package to create a plot
-# It is an extra data function, it is not called by the gateway function, but by the model_run function
+# It is creates extra data function.
 #' @export
 generate_plot <- function() {
 
