@@ -62,7 +62,7 @@ hello2<-function(...)
 
 # This is a simple function that returns the name of the package, No input, ignoreDefauktInput must be true
 #' @export
-get_my_name<-function(xecution_id, callback_url)
+get_my_name<-function(...)
 {
   x<-getPackageName()
   return(x)
@@ -70,7 +70,7 @@ get_my_name<-function(xecution_id, callback_url)
 
 # This is a simple function that returns the information about the package, No input, ignoreDefauktInput must be true
 #' @export
-get_my_info<-function(xecution_id, callback_url)
+get_my_info<-function(...)
 {
   require(jsonlite)
 
