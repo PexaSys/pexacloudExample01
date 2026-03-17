@@ -60,12 +60,12 @@ callback<- function(json_body, callback_url){
   require(httr)
 
   # Convert the list to JSON
-  # json_body <- toJSON(json_body, auto_unbox = TRUE)
+  json_body <- toJSON(json_body, auto_unbox = TRUE)
 
   # Make the POST request, ignoring SSL certificate verification
   response <- POST(
     callback_url,
-    # add_headers(.headers = c("Content-Type" = "application/json")),
+    add_headers(.headers = c("Content-Type" = "application/json")),
     body = json_body,
     encode = "json",
     config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE)
@@ -187,10 +187,11 @@ long_running_model_run <- function(...) {
   # Send the results back to PexaCloud
   ret <- callback(list(execution_id = execution_id, func_output=list(key1=1,key2=2)), callback_url)
 
-  return(list(
+  require(jsonlite)
+  return(toJSON(list(
     execution_id = execution_id,
     result = "done"
-  ))
+  )))
 }
 
 # Example of a function that creates extra data
