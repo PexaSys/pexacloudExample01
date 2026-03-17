@@ -195,9 +195,12 @@ long_running_model_run_old <- function(...) {
 }
 #' @export
 long_running_model_run <- function(...) {
+
   require(jsonlite)
+  require(httr)
 
   tryCatch({
+
     arguments <- list(...)
 
     execution_id <- arguments$execution_id
@@ -210,7 +213,26 @@ long_running_model_run <- function(...) {
     if (is.na(iteration) || iteration < 1) stop("iteration must be a positive integer")
     if (is.na(wait) || wait < 0) stop("wait must be non-negative")
 
+    # -------------------------------------------------
+    # Health check
+    # -------------------------------------------------
+    health_url <- paste0(callback_url, "/health")
+
+    health_response <- tryCatch({
+      GET(health_url, timeout(5))
+    }, error = function(e) {
+      stop(paste("Callback server health check failed:", e$message))
+    })
+
+    if (status_code(health_response) != 200) {
+      stop(paste("Callback server unhealthy. Status:", status_code(health_response)))
+    }
+
+    # -------------------------------------------------
+    # Main loop
+    # -------------------------------------------------
     for (i in seq_len(iteration)) {
+
       callback(
         list(
           execution_id = execution_id,
@@ -223,8 +245,10 @@ long_running_model_run <- function(...) {
       Sys.sleep(wait)
     }
 
-    # Send final result back to PexaCloud
-    ret <- callback(
+    # -------------------------------------------------
+    # Final result
+    # -------------------------------------------------
+    callback(
       list(
         execution_id = execution_id,
         func_output = list(key1 = 1, key2 = 2)
@@ -240,7 +264,9 @@ long_running_model_run <- function(...) {
       ),
       auto_unbox = TRUE
     ))
+
   }, error = function(e) {
+
     return(toJSON(
       list(
         success = FALSE,
@@ -250,6 +276,7 @@ long_running_model_run <- function(...) {
       auto_unbox = TRUE,
       null = "null"
     ))
+
   })
 }
 
