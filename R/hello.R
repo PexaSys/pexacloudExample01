@@ -85,8 +85,10 @@ hello<-function(...)
 
 # This is a simple function that returns the input arguments
 #' @export
-echo_input<-function(...){
+echo_input<-function(...)
+{
   arguments <- list(...)
+  require(jsonlite)
   return(toJSON(arguments))
 }
 
