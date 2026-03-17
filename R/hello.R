@@ -219,7 +219,7 @@ long_running_model_run <- function(...) {
     # callback_url is http://localhost:9443/servicecallback/ -> http://localhost:9443/health
     # remove the /servicecallback/ from the callback_url
     callback_base_url <- sub("/servicecallback/", "/", callback_url)
-    health_url <- paste0(callback_base_url, "/health") 
+    health_url <- paste0(callback_base_url, "health") 
 
     health_response <- tryCatch({
       GET(health_url, timeout(5))
