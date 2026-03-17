@@ -60,21 +60,22 @@ callback<- function(json_body, callback_url){
   require(httr)
 
   # Convert the list to JSON
-  json_body <- toJSON(json_body, auto_unbox = TRUE)
+  # json_body <- toJSON(json_body, auto_unbox = TRUE)
 
   # Make the POST request, ignoring SSL certificate verification
   response <- POST(
     callback_url,
-    add_headers(.headers = c("Content-Type" = "application/json")),
+    # add_headers(.headers = c("Content-Type" = "application/json")),
     body = json_body,
     encode = "json",
     config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE)
   )
 
+  
 }
 
 
-# Thiis s a simple function that returns 'Hello!', without ..., ignoreDefauktInput must be true
+# This is a simple function that returns 'Hello!', without ..., ignoreDefauktInput must be true
 # funcInput: {}
 #' @export
 hello<-function(...)
@@ -133,7 +134,10 @@ call_another_function<-function(...){
 
   arguments <- list(...)
 
-  out<-do.call(arguments$func_name, args = list(...))
+  func_name <- arguments$func_name
+  arguments$func_name <- NULL
+
+  out <- do.call(func_name, args = arguments)
 
   # Preparing to send the result back to PexaCloud
   require(jsonlite)
@@ -160,6 +164,8 @@ long_running_model_run<-function(...){
 
     # Report progress
     ret <- callback(list(execution_id = execution_id, progress_step = i, progress_total=iteration), callback_url)
+
+    Sys.sleep(wait)
 
     # Print the current value of the counter
     print(i)
@@ -217,6 +223,7 @@ generate_plot <- function(...) {
     geom_line() +
     ggtitle("Sample Plot 2")
   print(p2)
+
   #It is needed in Linux
   dev.off()
 
