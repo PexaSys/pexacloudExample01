@@ -83,6 +83,13 @@ hello<-function(...)
   return('Hello!')
 }
 
+# This is a simple function that returns the input arguments
+#' @export
+echo_input<-function(...){
+  arguments <- list(...)
+  return(toJSON(arguments))
+}
+
 # This is a simple function that returns the information about the package.
 # funcInput: {}
 #' @export
