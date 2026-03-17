@@ -53,6 +53,7 @@
 #'
 
 # Thiis s a simple function that returns 'Hello!', without ..., ignoreDefauktInput must be true
+# funcInput: {}
 #' @export
 hello<-function(...)
 {
@@ -60,6 +61,7 @@ hello<-function(...)
 }
 
 # This is a simple function that returns the information about the package.
+# funcInput: {}
 #' @export
 get_my_info<-function(...)
 {
@@ -97,6 +99,7 @@ callback<- function(json_body, callback_url){
 
 # This is the gateway function that is used to be called by PexaCloud.
 # It is default function that is called by PexaCloud if no function is specified in the request
+# funcInput: {"param1": "value1", "param2": "value2", "param3": "value3"}
 #' @export
 gateway<-function(...){
 
@@ -110,6 +113,8 @@ gateway<-function(...){
   param3<-arguments$param3
 
   # Do the work
+
+
   # For example contact these params.
   out<- list(result="success", param1=param1, param2=param2, param3=param3)
 
@@ -120,12 +125,13 @@ gateway<-function(...){
 }
 
 # example of choose a function and call it dynamically
+# funcInput: {"func_name": "model_run", "iteration": 10, "wait": 1}
 #' @export
-call_function<-function(...){
+call_another_function<-function(...){
 
   arguments <- list(...)
 
-  out<-do.call(arguments$func_name, args = list( execution_id = arguments$execution_id, callback_url = arguments$callback_url, interation = arguments$interation, wait = arguments$wait))
+  out<-do.call(arguments$func_name, args = list(...))
 
   # Preparing to send the result back to PexaCloud
   require(jsonlite)
@@ -134,9 +140,18 @@ call_function<-function(...){
   return(toJSON(out))
 }
 
-# Example of a function that used callback method to works long like a an asynchronous function
+# Example of a function that used callback method to works long
 #' @export
-model_run<-function(execution_id, callback_url, iteration, wait){
+long_running_model_run<-function(...){
+
+   arguments <- list(...)
+
+  # first level of the json 
+  # this is an example that user wanted the getway function to call a different function: func_name="model_run"
+  execution_id<-arguments$execution_id
+  callback_url<-arguments$callback_url
+  iteration<-arguments$iteration
+  wait<-arguments$wait
 
   # Start the while loop
   for (i in 1:iteration) {
@@ -157,8 +172,11 @@ model_run<-function(execution_id, callback_url, iteration, wait){
 }
 
 # Example of a function that creates extra data
+# funcInput: {}
 #' @export
-create_extra_data<-function(){
+create_extra_data<-function(...){
+
+  arguments <- list(...)
 
   # Call another function that creates extra data
   generate_plot()
@@ -168,8 +186,9 @@ create_extra_data<-function(){
 # Example of a function that is called by the other functions
 # It is a simple function that demonstrates the use of the ggplot2 package to create a plot
 # It is creates extra data function.
+# funcInput: {}
 #' @export
-generate_plot <- function() {
+generate_plot <- function(...) {
 
   plot(cars)
   plot(cars$speed)
