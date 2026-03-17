@@ -1,7 +1,7 @@
 Package: pexacloudExample01
 Type: Package
 Title: Example R Package, prepared for PexaCloud Service
-Version: 0.1.17
+Version: 0.1.18
 Authors@R: c(
     person(
       "Mehrshad", "Mokhtaran",

@@ -225,7 +225,8 @@ long_running_model_run <- function(...) {
     })
 
     if (status_code(health_response) != 200) {
-      stop(paste("Callback server unhealthy. Status:", status_code(health_response)))
+      # stop(paste("Callback server unhealthy. Status:", status_code(health_response))) # add callback_url to the error message
+      stop(paste("Callback server unhealthy. Status:", status_code(health_response), "Callback URL:", callback_url))
     }
 
     # -------------------------------------------------
