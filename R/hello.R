@@ -52,6 +52,28 @@
 #' @importFrom ggplot2 ggplot
 #'
 
+
+# This is the callback helper function that is used to send the progress and results back to PexaCloud
+callback<- function(json_body, callback_url){
+
+  require(jsonlite)
+  require(httr)
+
+  # Convert the list to JSON
+  json_body <- toJSON(json_body, auto_unbox = TRUE)
+
+  # Make the POST request, ignoring SSL certificate verification
+  response <- POST(
+    callback_url,
+    add_headers(.headers = c("Content-Type" = "application/json")),
+    body = json_body,
+    encode = "json",
+    config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE)
+  )
+
+}
+
+
 # Thiis s a simple function that returns 'Hello!', without ..., ignoreDefauktInput must be true
 # funcInput: {}
 #' @export
@@ -75,26 +97,6 @@ get_my_info<-function(...)
       package_dependencies_utils = utils::packageDescription("pexacloudExample01")$Imports
     )
   ))
-}
-
-# This is the callback helper function that is used to send the progress and results back to PexaCloud
-callback<- function(json_body, callback_url){
-
-  require(jsonlite)
-  require(httr)
-
-  # Convert the list to JSON
-  json_body <- toJSON(json_body, auto_unbox = TRUE)
-
-  # Make the POST request, ignoring SSL certificate verification
-  response <- POST(
-    callback_url,
-    add_headers(.headers = c("Content-Type" = "application/json")),
-    body = json_body,
-    encode = "json",
-    config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE)
-  )
-
 }
 
 # This is the gateway function that is used to be called by PexaCloud.
