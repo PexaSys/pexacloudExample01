@@ -157,43 +157,6 @@ call_another_function<-function(...){
 
 # Example of a function that used callback method to works long
 #' @export
-long_running_model_run_old <- function(...) {
-  arguments <- list(...)
-
-  execution_id <- arguments$execution_id
-  callback_url <- arguments$callback_url
-  iteration <- as.integer(arguments$iteration)
-  wait <- as.numeric(arguments$wait)
-
-  if (is.null(execution_id)) stop("execution_id is required")
-  if (is.null(callback_url)) stop("callback_url is required")
-  if (is.na(iteration) || iteration < 1) stop("iteration must be a positive integer")
-  if (is.na(wait) || wait < 0) stop("wait must be non-negative")
-
-  for (i in seq_len(iteration)) {
-    callback(
-      list(
-        execution_id = execution_id,
-        progress_step = i,
-        progress_total = iteration
-      ),
-      callback_url
-    )
-
-    Sys.sleep(wait)
-  }
-
-  
-  # Send the results back to PexaCloud
-  ret <- callback(list(execution_id = execution_id, func_output=list(key1=1,key2=2)), callback_url)
-
-  require(jsonlite)
-  return(toJSON(list(
-    execution_id = execution_id,
-    result = "done"
-  )))
-}
-#' @export
 long_running_model_run <- function(...) {
 
   require(jsonlite)
